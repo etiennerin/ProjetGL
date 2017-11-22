@@ -54,7 +54,8 @@ $('#chat form').submit(function (e) {
  * Réception d'un message
  */
 socket.on('chat-message', function (message) {
-  $('#messages').append($('<li>').html('<span class="username">' + message.username + '</span> ' + message.text));
+	console.log(typeof CryptoJS.AES.decrypt(message.text, "d6F3Efeq").toString(CryptoJS.enc.Utf8));
+  $('#messages').append($('<li>').html('<span class="username">' + message.username + '</span> ' + CryptoJS.AES.decrypt(message.text, "d6F3Efeq")));
   scrollToBottom();
 });
 

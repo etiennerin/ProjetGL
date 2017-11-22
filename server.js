@@ -3,6 +3,18 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var i;
+var crypto = require('crypto'),
+    algorithm = 'aes-256-ctr',
+    password = 'd6F3Efeq';
+  
+  var key = "supersecretkey";
+  
+function encrypt(text){
+  var cipher = crypto.createCipher(algorithm,password)
+  var crypted = cipher.update(text,'utf8','hex')
+  crypted += cipher.final('hex');
+  return crypted;
+}
 
 /**
  * Gestion des requêtes HTTP des utilisateurs en leur renvoyant les fichiers du dossier 'public'
@@ -23,6 +35,7 @@ var messages = [];
  * Liste des utilisateurs en train de saisir un message
  */
 var typingUsers = [];
+
 
 io.on('connection', function (socket) {
 
@@ -117,6 +130,7 @@ io.on('connection', function (socket) {
    */
   socket.on('chat-message', function (message) {
     // On ajoute le username au message et on émet l'événement
+	message.text=encrypt(message.text);
     message.username = loggedUser.username;
     io.emit('chat-message', message);
     // Sauvegarde du message
