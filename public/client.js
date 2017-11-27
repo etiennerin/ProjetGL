@@ -5,6 +5,20 @@ var i;
 
 /*** Fonctions utiles ***/
 
+var cly=1;
+
+function crOuExclFaisPasChier(chaine,clf)
+{
+	var cr;
+	var crch="";
+	for(var i =0;i <chaine.length;i++)
+	{
+		cr=chaine.charCodeAt(i)-clf;//i%clf.length
+		crch+=String.fromCharCode(cr);
+	}	
+	return crch;
+}
+
 /**
  * Scroll vers le bas de page si l'utilisateur n'est pas remonté pour lire d'anciens messages
  */
@@ -54,8 +68,8 @@ $('#chat form').submit(function (e) {
  * Réception d'un message
  */
 socket.on('chat-message', function (message) {
-	console.log(typeof CryptoJS.AES.decrypt(message.text, "d6F3Efeq").toString(CryptoJS.enc.Utf8));
-  $('#messages').append($('<li>').html('<span class="username">' + message.username + '</span> ' + CryptoJS.AES.decrypt(message.text, "d6F3Efeq")));
+	console.log(crOuExclFaisPasChier(message.text,cly));
+  $('#messages').append($('<li>').html('<span class="username">' + message.username + '</span> ' + crOuExclFaisPasChier(message.text,cly)));
   scrollToBottom();
 });
 
@@ -63,7 +77,7 @@ socket.on('chat-message', function (message) {
  * Réception d'un message de service
  */
 socket.on('service-message', function (message) {
-  $('#messages').append($('<li class="' + message.type + '">').html('<span class="info">information</span> ' + message.text));
+  $('#messages').append($('<li class="' + message.type + '">').html('<span class="info">information</span> ' + message.text,cly));
   scrollToBottom();
 });
 

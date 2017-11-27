@@ -1,9 +1,13 @@
 var express = require('express');
 var app = express();
+var session = require('cookie-session');
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var i;
-var crypto = require('crypto'),
+var cookieParser = require('cookie-parser');
+
+//var CryptoJS = require("crypto-js");
+/*var crypto = require('crypto'),
     algorithm = 'aes-256-ctr',
     password = 'd6F3Efeq';
   
@@ -14,12 +18,45 @@ function encrypt(text){
   var crypted = cipher.update(text,'utf8','hex')
   crypted += cipher.final('hex');
   return crypted;
+}*/
+
+var cly=1;
+
+function crOuExclFaisPasChier(chaine,clf)
+{
+	var cr;
+	var crch="";
+	for(var i =0;i <chaine.length;i++)
+	{
+		cr=chaine.charCodeAt(i)+clf;//i%clf.length
+		crch+=String.fromCharCode(cr);
+	}
+	return crch;
 }
+
+var expiryDate = new Date( Date.now() + 60 * 60 * 1000 ); // 1 hour
+
 
 /**
  * Gestion des requêtes HTTP des utilisateurs en leur renvoyant les fichiers du dossier 'public'
  */
-app.use('/', express.static(__dirname + '/public'));
+app.use('/', express.static(__dirname + '/public')).use(cookieParser()).use(session({
+  name: 'session',
+  keys: ['key1', 'key2'],
+  cookie: { secure: true,
+            httpOnly: true,
+            domain: 'exp.com',
+            path: 'foo/bar',
+            expires: expiryDate
+          }
+  })
+);
+/*app.get('/', function(req, res) {
+         
+    res.cookie('unCookie', 'valeurCook'); // .send('Cookie had been set');
+     
+    console.log('Cookies: ', req.cookies['unCookie']);
+});*/
 
 /**
  * Liste des utilisateurs connectés
@@ -130,7 +167,9 @@ io.on('connection', function (socket) {
    */
   socket.on('chat-message', function (message) {
     // On ajoute le username au message et on émet l'événement
-	message.text=encrypt(message.text);
+	//message.text=encrypt(message.text);
+	//message.text=CryptoJS.AES.encrypt(JSON.stringify(message.text),"d6F3Efeq");
+	message.text=crOuExclFaisPasChier(message.text,cly);
     message.username = loggedUser.username;
     io.emit('chat-message', message);
     // Sauvegarde du message
